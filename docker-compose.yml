@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: ./db/Dockerfile
+    image: postgres-db
+    container_name: postgres-db
+    ports:
+      - '5431:5432'
+    environment:
+      - POSTGRES_USER=${PGUSER:-admin}
+      - POSTGRES_PASSWORD=${PGPASSWORD:-admin}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  import:
+    build:
+      context: ./import
+      dockerfile: ./Dockerfile
+    image: user-event-import
+    container_name: user-event-import
+    links:
+      - postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - PGUSER=${PGUSER:-admin}
+      - PGPASSWORD=${PGPASSWORD:-admin}
+      - PGHOST=${PGHOST:-postgres}
+      - PGDATABASE=${PGDATABASE:-warehouse}
+      - IMPORT_DATE=${IMPORT_DATE}
+    volumes:
+      - ./data:/usr/src/data
+    entrypoint:
+      - python
+      - /usr/src/import/etls/import_user_events.py
+
+volumes:
+  data:
