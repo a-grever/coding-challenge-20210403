@@ -64,7 +64,15 @@ reports_t_user_events_daily = Table(
 )
 
 
-def get_pg_engine():
+def get_pg_engine() -> Any:
+    """ Return a sqlalchemy engine using the database connection details
+    from environment variables.
+
+    Returns
+    -------
+    sqlalchemy.engine.base.Engine
+        db engine
+    """
     url = URL(
         drivername="postgresql+psycopg2",
         username=os.environ["PGUSER"],
@@ -111,8 +119,26 @@ def update_stmt(target_table: Any, update_columns: List) -> Any:
     return insert_stmt.on_conflict_do_update(constraint=constraint, set_=update_dict)
 
 
-def insert_from_select(params: dict, target_table: Any, select_stmt: str) -> int:
-    target_columns = [c for c in target_table.c]
+def insert_from_select(*, params: dict, target_table: Any, select_stmt: str) -> Any:
+    """ Perform and insert statement based on the select stmnt in <select_stmt>.
+    The table <target_table> must have a primary key, any row returned by the select
+    statement, whose primary key already exist in the target table causes an upsert.
+
+    Parameters
+    ----------
+    params : dict
+        parameters to be inserted in the select_stmt
+    target_table : sqlalchemy.Table
+        table to insert into
+    select_stmt : str
+        select query
+
+    Returns
+    -------
+    Any
+        [description]
+    """
+    target_columns = list(target_table.c)
     upsert_columns = [c for c in target_table.c if not c.primary_key]
     insert_stmt = update_stmt(target_table=target_table, update_columns=upsert_columns)
 

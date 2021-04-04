@@ -2,9 +2,9 @@
 
 lint:
 	black --check -t py38 -l 100 .
-	pylint etls
+	pylint --rcfile=./pylint.cfg etls
 	flake8
-	mypy etls
+	mypy --ignore-missing-imports etls
 
 test:
 	coverage run --rcfile=setup.cfg --source=./etls -m pytest

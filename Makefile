@@ -18,7 +18,7 @@ test_docker:
 	docker-compose run --rm --entrypoint 'make test' import
 
 lint_docker:
-	docker-compose run --rm --entrypoint 'make  import
+	docker-compose run --rm --entrypoint 'make lint' import
 
 teardown:
 	docker-compose down
