@@ -35,8 +35,8 @@ raw_t_user_events = Table(
     schema="raw",
 )
 
-crm_t_users = Table(
-    "users",
+crm_t_users_dim = Table(
+    "users_dim",
     metadata,
     Column("event_sk", BigInteger, autoincrement=False, primary_key=True),
     Column("id", Text),
@@ -52,8 +52,8 @@ crm_t_users = Table(
     schema="crm",
 )
 
-crm_t_organizations = Table(
-    "organizations",
+crm_t_organizations_dim = Table(
+    "organizations_dim",
     metadata,
     Column("organization_key", Text, primary_key=True),
     Column("organization_name", Text),

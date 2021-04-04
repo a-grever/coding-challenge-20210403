@@ -30,7 +30,7 @@ CREATE TABLE raw.user_events (
 );
 
 
-CREATE TABLE crm.users (
+CREATE TABLE crm.users_dim (
     event_sk BIGINT PRIMARY KEY,
     id TEXT NOT NULL,
     username TEXT NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE crm.users (
     is_deleted BOOLEAN  NOT NULL
 );
 
-CREATE TABLE crm.organizations (
+CREATE TABLE crm.organizations_dim (
     organization_key TEXT PRIMARY KEY,
     organization_name TEXT,
     created_at TIMESTAMPTZ

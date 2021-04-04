@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from database import get_pg_engine, crm_t_organizations
+from database import get_pg_engine, crm_t_organizations_dim
 
 data_folder = Path(__file__).parent.parent.parent / 'data'
 
@@ -17,7 +17,7 @@ def get_organisations():
 
 def import_organisations():
     engine = get_pg_engine()
-    insert_stmt = crm_t_organizations.insert().values(list(get_organisations()))
+    insert_stmt = crm_t_organizations_dim.insert().values(list(get_organisations()))
     res = engine.execute(insert_stmt)
     print(f'imported organisations: {res.rowcount}')
 
