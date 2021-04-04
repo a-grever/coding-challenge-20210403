@@ -1,10 +1,9 @@
-from datetime import datetime
-import os
+from datetime import date
 
 from database import reports_t_user_events_daily, insert_from_select
+from common import get_import_date
 
-
-select_query = """
+SELECT_QUERY = """
     SELECT
         received_at::date AS "event_date",
         COUNT(*) FILTER(WHERE event_type = 'User Created') AS "n_created",
@@ -20,12 +19,23 @@ select_query = """
         1
     """
 
-if __name__ == "__main__":
-    import_date = datetime.strptime(os.environ["IMPORT_DATE"], "%Y-%m-%d").date()
+
+def run_user_events_daily(import_date: date):
+    """ Fill the table reports.user_events_daily with data from a single day.
+
+    Parameters
+    ----------
+    import_date : date
+        date for which to import events
+    """
     print(f"processing user events for {import_date}")
-    res = insert_from_select(
+    insert_from_select(
         params={"import_date": import_date},
         target_table=reports_t_user_events_daily,
-        select_stmt=select_query,
+        select_stmt=SELECT_QUERY,
     )
     print(f"imported user events for {import_date} to {reports_t_user_events_daily.fullname}")
+
+
+if __name__ == "__main__":  # pragma: no cover
+    run_user_events_daily(import_date=get_import_date())

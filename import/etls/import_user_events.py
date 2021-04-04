@@ -19,8 +19,8 @@ def get_user_events():
     events_sample = data_folder / "events_sample.json"
     if not events_sample.exists():
         print(f"couldn't find the file {events_sample.resolve()}")
-    with events_sample.open("r") as f:
-        user_events = json.load(f)
+    with events_sample.open("r") as events_sample_file:
+        user_events = json.load(events_sample_file)
     yield from user_events
 
 

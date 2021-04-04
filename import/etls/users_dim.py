@@ -1,10 +1,10 @@
-from datetime import datetime
-import os
+from datetime import date
 
 from database import crm_t_users_dim, insert_from_select
+from common import get_import_date
 
 
-select_query = """
+SELECT_QUERY = """
     SELECT DISTINCT ON (event_sk)
         event_sk,
         id,
@@ -59,10 +59,21 @@ select_query = """
     ) updates
     """
 
-if __name__ == "__main__":
-    import_date = datetime.strptime(os.environ["IMPORT_DATE"], "%Y-%m-%d").date()
+
+def run_users_dim(import_date: date) -> None:
+    """ Fill the table crm.users_dim with data from a single day.
+
+    Parameters
+    ----------
+    import_date : date
+        date for which to import events
+    """
     print(f"processing user events for {import_date}")
     insert_from_select(
-        params={"import_date": import_date}, target_table=crm_t_users_dim, select_stmt=select_query
+        params={"import_date": import_date}, target_table=crm_t_users_dim, select_stmt=SELECT_QUERY
     )
     print(f"imported user events for {import_date} to {crm_t_users_dim.fullname}")
+
+
+if __name__ == "__main__":  # pragma: no cover
+    run_users_dim(import_date=get_import_date())
