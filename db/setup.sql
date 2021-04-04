@@ -4,6 +4,7 @@ CREATE DATABASE warehouse;
 \connect warehouse;
 CREATE SCHEMA raw;
 CREATE SCHEMA crm;
+CREATE SCHEMA reports;
 
 -- GRANT USAGE ON SCHEMA raw to etl;
 -- GRANT USAGE ON SCHEMA crm to etl;
@@ -48,4 +49,13 @@ CREATE TABLE crm.organizations_dim (
     organization_key TEXT PRIMARY KEY,
     organization_name TEXT,
     created_at TIMESTAMPTZ
+);
+
+CREATE TABLE reports.user_events_daily (
+    event_date DATE PRIMARY KEY,
+    n_created INTEGER,
+    n_updated INTEGER,
+    n_deleted INTEGER,
+    n_unique INTEGER,
+    n_total INTEGER
 );

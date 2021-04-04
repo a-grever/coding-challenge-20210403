@@ -1,21 +1,11 @@
 import os
+from typing import Any, List
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy import MetaData, Table, Column
-from sqlalchemy import BigInteger, Text, DateTime, Boolean
+from sqlalchemy import BigInteger, Integer, Text, DateTime, Boolean, Date
 from sqlalchemy.engine.url import URL
-
-
-def get_pg_engine():
-    url = URL(
-        drivername="postgresql+psycopg2",
-        username=os.environ['PGUSER'],
-        password=os.environ['PGPASSWORD'],
-        host=os.environ['PGHOST'],
-        port=5432,
-        database=os.environ['PGDATABASE'],
-    )
-    return create_engine(url, pool_pre_ping=True)
+from sqlalchemy.dialects import postgresql
 
 
 metadata = MetaData()
@@ -60,3 +50,75 @@ crm_t_organizations_dim = Table(
     Column("created_at", DateTime(True)),
     schema="crm",
 )
+
+reports_t_user_events_daily = Table(
+    "user_events_daily",
+    metadata,
+    Column("event_date", Date, primary_key=True),
+    Column("n_created", Integer),
+    Column("n_updated", Integer),
+    Column("n_deleted", Integer),
+    Column("n_unique", Integer),
+    Column("n_total", Integer),
+    schema="reports",
+)
+
+
+def get_pg_engine():
+    url = URL(
+        drivername="postgresql+psycopg2",
+        username=os.environ["PGUSER"],
+        password=os.environ["PGPASSWORD"],
+        host=os.environ["PGHOST"],
+        port=5432,
+        database=os.environ["PGDATABASE"],
+    )
+    return create_engine(url, pool_pre_ping=True)
+
+
+def update_stmt(target_table: Any, update_columns: List) -> Any:
+    """If inserting a row triggers e.g. a unique constraint an error is raised.
+    If in that case the exisiting row should be updated this function generates
+    an insert query with an update logic, e.g.
+    INSERT INTO <>
+    ON CONFLICT (<primary_key>) DO UPDATE SET created_at = excluded.created_at
+
+    Note that the this is postgres specific. The target_table must have a primary key.
+
+    Parameters
+    ----------
+    target_table : sqlalchemy.Table
+        table to insert into
+    update_columns : List[sqlalchemy.Column]
+        the columns that are to be updated if a conflict arises
+
+    Returns
+    -------
+    sa.dialects.postgresql.dml.Insert
+        insert statement with conflict handling
+
+    Raises
+    ------
+    RuntimeError
+        if the target table has no primary key
+    """
+    insert_stmt = postgresql.insert(target_table, inline=True)
+    constraint = target_table.primary_key
+    if not constraint:
+        raise RuntimeError(f"table {target_table.fullname} must have a primary key")
+    update_columns_str = [col.name for col in update_columns]
+    update_dict = {col.name: col for col in insert_stmt.excluded if col.name in update_columns_str}
+    return insert_stmt.on_conflict_do_update(constraint=constraint, set_=update_dict)
+
+
+def insert_from_select(params: dict, target_table: Any, select_stmt: str) -> int:
+    target_columns = [c for c in target_table.c]
+    upsert_columns = [c for c in target_table.c if not c.primary_key]
+    insert_stmt = update_stmt(target_table=target_table, update_columns=upsert_columns)
+
+    ins_from_select_stmt = insert_stmt.from_select(target_columns, text(select_stmt).columns())
+
+    engine = get_pg_engine()
+    print(engine)
+    result = engine.execute(ins_from_select_stmt, params)
+    return result
