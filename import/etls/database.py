@@ -119,6 +119,5 @@ def insert_from_select(params: dict, target_table: Any, select_stmt: str) -> int
     ins_from_select_stmt = insert_stmt.from_select(target_columns, text(select_stmt).columns())
 
     engine = get_pg_engine()
-    print(engine)
     result = engine.execute(ins_from_select_stmt, params)
     return result

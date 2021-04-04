@@ -14,5 +14,11 @@ users_dim:
 user_events_daily:
 	docker-compose run --rm --entrypoint 'python /usr/src/import/etls/user_events_daily.py' import
 
+test_docker:
+	docker-compose run --rm --entrypoint 'make test' import
+
+lint_docker:
+	docker-compose run --rm --entrypoint 'make  import
+
 teardown:
 	docker-compose down
