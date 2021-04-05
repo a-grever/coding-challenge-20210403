@@ -32,10 +32,11 @@ services:
     container_name: user-event-import
     links:
       - postgres
+      - queue
     depends_on:
       postgres:
         condition: service_healthy
-      queue:
+      consumer:
         condition: service_started
     environment:
       - PGUSER=${PGUSER:-admin}
@@ -58,6 +59,7 @@ services:
     container_name: user-event-consumer
     links:
       - postgres
+      - queue
     depends_on:
       postgres:
         condition: service_healthy
