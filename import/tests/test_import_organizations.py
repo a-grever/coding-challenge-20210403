@@ -23,7 +23,7 @@ def organizations():
 
 
 def test_get_organizations(mocker, organizations):
-    mock_data_folder = mocker.patch.object(import_organizations, 'data_folder')
+    mock_data_folder = mocker.patch.object(import_organizations, "data_folder")
     mock_org_sample = mock_data_folder / "orgs_sample.json"
     mock_org_sample.exists.return_value = True
     mock_org_sample.open.return_value = StringIO(json.dumps(organizations))
@@ -32,7 +32,7 @@ def test_get_organizations(mocker, organizations):
 
 
 def test_get_organizations_missing_file(mocker):
-    mock_data_folder = mocker.patch.object(import_organizations, 'data_folder')
+    mock_data_folder = mocker.patch.object(import_organizations, "data_folder")
     mock_org_sample = mock_data_folder / "orgs_sample.json"
     mock_org_sample.exists.return_value = False
     with pytest.raises(RuntimeError):
@@ -49,11 +49,7 @@ def test_copy_organizations_from_file(mocker, mock_engine, organizations):
         file=mocker.ANY,
         table=import_organizations.crm_t_organizations_dim.fullname,
         sep="\t",
-        columns=[
-            "organization_key",
-            "organization_name",
-            "created_at",
-        ],
+        columns=["organization_key", "organization_name", "created_at",],
     )
     mock_con.commit.assert_called_once()
     mock_con.close.assert_called_once()
