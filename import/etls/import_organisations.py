@@ -1,3 +1,4 @@
+from io import StringIO
 import json
 from pathlib import Path
 from typing import Generator
@@ -8,7 +9,7 @@ data_folder = Path(__file__).parent.parent.parent / "data"
 
 
 def get_organisations() -> Generator[dict, None, None]:
-    """ read sample organisations from json and yield single entries
+    """read sample organisations from json and yield single entries
 
     Yields
     -------
@@ -23,14 +24,28 @@ def get_organisations() -> Generator[dict, None, None]:
     yield from user_events
 
 
-def import_organisations() -> None:
-    """ import organisation from sample json to database.
-    """
+def copy_organisations_from_file():
+    """using the COPY command to load organisations into the warehouse."""
     engine = get_pg_engine()
-    insert_stmt = crm_t_organizations_dim.insert(dml=None).values(list(get_organisations()))
-    res = engine.execute(insert_stmt)
-    print(f"imported organisations: {res.rowcount}")
+    conn = engine.raw_connection()
+    cur = conn.cursor()
+
+    columns = [
+        "organization_key",
+        "organization_name",
+        "created_at",
+    ]
+    organisations_tsv = StringIO(
+        "\n".join("\t".join([o[col] for col in columns]) for o in get_organisations())
+    )
+
+    cur.copy_from(
+        file=organisations_tsv, table=crm_t_organizations_dim.fullname, sep="\t", columns=columns
+    )
+    conn.commit()
+    conn.close()
+    print(f"copied organizations to {crm_t_organizations_dim.fullname}")
 
 
 if __name__ == "__main__":
-    import_organisations()
+    copy_organisations_from_file()
