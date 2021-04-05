@@ -49,7 +49,7 @@ def test_copy_organizations_from_file(mocker, mock_engine, organizations):
         file=mocker.ANY,
         table=import_organizations.crm_t_organizations_dim.fullname,
         sep="\t",
-        columns=["organization_key", "organization_name", "created_at",],
+        columns=["organization_key", "organization_name", "created_at"],
     )
     mock_con.commit.assert_called_once()
     mock_con.close.assert_called_once()
