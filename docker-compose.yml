@@ -35,6 +35,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      queue:
+        condition: service_started
     environment:
       - PGUSER=${PGUSER:-admin}
       - PGPASSWORD=${PGPASSWORD:-admin}
