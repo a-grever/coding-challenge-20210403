@@ -1,12 +1,15 @@
 .PHONY:	setup import teardown
 
 setup:
+	make teardown
+	docker-compose build
 	docker-compose up -d postgres
-	docker-compose build import
-	docker-compose run --rm --entrypoint 'python /usr/src/import/etls/import_organizations.py' import
+	docker-compose up -d queue
+	docker-compose up -d consumer
 
 import:
-	docker-compose run --rm import
+	docker-compose run --rm --entrypoint 'python /usr/src/import/etls/import_organizations.py' import
+	docker-compose run --rm --entrypoint 'python /usr/src/import/etls/user_event_producer.py' import
 
 users_dim:
 	docker-compose run --rm --entrypoint 'python /usr/src/import/etls/users_dim.py' import
