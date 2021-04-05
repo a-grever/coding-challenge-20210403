@@ -15,10 +15,16 @@ def get_organizations() -> Generator[dict, None, None]:
     -------
     dict
         single organisation row
+
+    Raises
+    ------
+    RuntimeError
+        if the file orgs_sample.json can't be found
     """
     org_sample = data_folder / "orgs_sample.json"
     if not org_sample.exists():
-        print(f"couldn't find the file {org_sample.resolve()}")
+        raise RuntimeError(f"couldn't find the file {org_sample.resolve()}")
+
     with org_sample.open("r") as org_sample_file:
         user_events = json.load(org_sample_file)
     yield from user_events
