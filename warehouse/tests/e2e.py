@@ -1,8 +1,10 @@
 from datetime import date
+import time
 
 import database as db
 import users_dim
 import user_events_daily
+import user_event_producer
 
 
 events = [
@@ -84,8 +86,14 @@ def insert_user_events(engine):
 
 
 def test_complete():
+    try:
+        user_event_producer.main(user_events=events)
+    except user_event_producer.pika.exceptions.AMQPConnectionError:
+        # give the service some time to start and try again
+        time.sleep(10)
+        user_event_producer.main(user_events=events)
+
     engine = db.get_pg_engine()
-    insert_user_events(engine)
 
     for dt in received_dates:
         users_dim.run(engine=engine, import_date=dt)
