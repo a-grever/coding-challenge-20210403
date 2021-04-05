@@ -1,7 +1,8 @@
 import json
 import os
 from pathlib import Path
-from typing import Generator
+from typing import Generator, Iterable
+
 import pika
 
 data_folder = Path(__file__).resolve().parents[2] / "data"
@@ -23,7 +24,7 @@ def get_user_events() -> Generator[dict, None, None]:
     yield from user_events
 
 
-def main():
+def main(user_events: Iterable[dict]):
     """Producer sending user events to the queue 'user_events'.
     """
     connection = pika.BlockingConnection(pika.ConnectionParameters(os.environ["QUEUE_HOST"]))
@@ -35,7 +36,7 @@ def main():
 
     cnt = 0
 
-    for user_event in get_user_events():
+    for user_event in user_events:
         channel.basic_publish(
             exchange="",
             routing_key="user_events",
@@ -51,4 +52,4 @@ def main():
 
 
 if __name__ == "__main__":  # pragma: no cover
-    main()
+    main(user_events=get_user_events())

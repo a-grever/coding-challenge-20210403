@@ -52,9 +52,8 @@ def test_test_get_user_events_missing_file(mocker):
 def test_main(mocker, monkeypatch, user_events):
     monkeypatch.setenv("QUEUE_HOST", "test-queue")
     mock_con = mocker.patch.object(user_event_producer.pika, "BlockingConnection").return_value
-    mocker.patch.object(user_event_producer, "get_user_events", return_value=user_events)
     mock_chan = mock_con.channel.return_value
-    user_event_producer.main()
+    user_event_producer.main(user_events=user_events)
 
     assert mock_chan.basic_publish.call_count == len(user_events)
     mock_chan.queue_declare.assert_called_once_with(
