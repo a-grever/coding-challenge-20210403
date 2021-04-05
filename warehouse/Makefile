@@ -2,12 +2,12 @@
 
 lint:
 	black --check -t py38 -l 100 .
-	pylint --rcfile=./pylint.cfg etls
+	pylint --rcfile=./pylint.cfg warehouse
 	flake8
-	mypy --ignore-missing-imports etls
+	mypy --ignore-missing-imports warehouse
 
 test:
-	coverage run --rcfile=setup.cfg --source=./etls -m pytest
+	coverage run --rcfile=setup.cfg --source=./warehouse -m pytest
 	coverage report --rcfile=setup.cfg
 
 e2e:
