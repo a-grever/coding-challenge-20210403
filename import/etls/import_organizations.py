@@ -58,5 +58,5 @@ def copy_organizations_from_file(engine: Any):
     print(f"copied organizations to {crm_t_organizations_dim.fullname}")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     copy_organizations_from_file(engine=get_pg_engine())
