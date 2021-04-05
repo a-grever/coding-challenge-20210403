@@ -21,7 +21,7 @@ services:
 
   import:
     build:
-      context: ./import
+      context: ./warehouse
       dockerfile: ./Dockerfile
     image: user-event-import
     container_name: user-event-import
@@ -40,7 +40,7 @@ services:
       - ./data:/usr/src/data
     entrypoint:
       - python
-      - /usr/src/import/etls/import_user_events.py
+      - /usr/src/warehouse/warehouse/user_event_consumer.py
 
 volumes:
   data:
