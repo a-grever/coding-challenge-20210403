@@ -9,3 +9,6 @@ lint:
 test:
 	coverage run --rcfile=setup.cfg --source=./etls -m pytest
 	coverage report --rcfile=setup.cfg
+
+e2e:
+	pytest ./tests/e2e.py

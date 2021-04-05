@@ -20,5 +20,11 @@ test_docker:
 lint_docker:
 	docker-compose run --rm --entrypoint 'make lint' import
 
+e2e:
+	make teardown
+	make setup
+	docker-compose run --rm --entrypoint 'make e2e' import
+	make teardown
+
 teardown:
 	docker-compose down
