@@ -36,6 +36,33 @@ services:
       - PGHOST=${PGHOST:-postgres}
       - PGDATABASE=${PGDATABASE:-warehouse}
       - IMPORT_DATE=${IMPORT_DATE}
+      - QUEUE_HOST=${QUEUE_HOST:-queue}
+    volumes:
+      - ./data:/usr/src/data
+    entrypoint:
+      - python
+      - /usr/src/warehouse/warehouse/import_user_events.py
+
+  consumer:
+    build:
+      context: ./warehouse
+      dockerfile: ./Dockerfile
+    image: user-event-consumer
+    container_name: user-event-consumer
+    links:
+      - postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+      queue:
+        condition: service_started
+    environment:
+      - PGUSER=${PGUSER:-admin}
+      - PGPASSWORD=${PGPASSWORD:-admin}
+      - PGHOST=${PGHOST:-postgres}
+      - PGDATABASE=${PGDATABASE:-warehouse}
+      - QUEUE_HOST=${QUEUE_HOST:-queue}
+    restart: always
     volumes:
       - ./data:/usr/src/data
     entrypoint:
