@@ -5,7 +5,7 @@ from typing import Any, Generator
 
 from database import get_pg_engine, crm_t_organizations_dim
 
-data_folder = Path(__file__).parent.parent.parent / "data"
+data_folder = Path(__file__).resolve().parents[2] / "data"
 
 
 def get_organizations() -> Generator[dict, None, None]:
