@@ -24,7 +24,6 @@ lint_docker:
 	docker-compose run --rm --entrypoint 'make lint' worker
 
 e2e:
-	make teardown
 	make setup
 	docker-compose run --rm --entrypoint 'make e2e' worker
 	make teardown
