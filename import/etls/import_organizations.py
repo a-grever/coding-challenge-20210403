@@ -8,8 +8,8 @@ from database import get_pg_engine, crm_t_organizations_dim
 data_folder = Path(__file__).parent.parent.parent / "data"
 
 
-def get_organisations() -> Generator[dict, None, None]:
-    """read sample organisations from json and yield single entries
+def get_organizations() -> Generator[dict, None, None]:
+    """read sample organizations from json and yield single entries
 
     Yields
     -------
@@ -24,8 +24,8 @@ def get_organisations() -> Generator[dict, None, None]:
     yield from user_events
 
 
-def copy_organisations_from_file(engine: Any):
-    """using the COPY command to load organisations into the warehouse.
+def copy_organizations_from_file(engine: Any):
+    """using the COPY command to load organizations into the warehouse.
 
     Parameters
     ----------
@@ -40,12 +40,12 @@ def copy_organisations_from_file(engine: Any):
         "organization_name",
         "created_at",
     ]
-    organisations_tsv = StringIO(
-        "\n".join("\t".join([o[col] for col in columns]) for o in get_organisations())
+    organizations_tsv = StringIO(
+        "\n".join("\t".join([o[col] for col in columns]) for o in get_organizations())
     )
 
     cur.copy_from(
-        file=organisations_tsv, table=crm_t_organizations_dim.fullname, sep="\t", columns=columns
+        file=organizations_tsv, table=crm_t_organizations_dim.fullname, sep="\t", columns=columns
     )
     conn.commit()
     conn.close()
@@ -53,4 +53,4 @@ def copy_organisations_from_file(engine: Any):
 
 
 if __name__ == "__main__":
-    copy_organisations_from_file(engine=get_pg_engine())
+    copy_organizations_from_file(engine=get_pg_engine())
