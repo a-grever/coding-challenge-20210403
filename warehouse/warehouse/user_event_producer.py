@@ -34,20 +34,18 @@ def main():
     channel.confirm_delivery()
 
     cnt = 0
-    try:
-        for user_event in get_user_events():
-            channel.basic_publish(
-                exchange="",
-                routing_key="user_events",
-                body=json.dumps(user_event),
-                mandatory=True,
-                properties=pika.BasicProperties(content_type="application/json", delivery_mode=2),
-            )
-            print(user_event.get("event_type"))
-            cnt += 1
 
-    except pika.exceptions.UnroutableError:
-        print("Error: Message was returned")
+    for user_event in get_user_events():
+        channel.basic_publish(
+            exchange="",
+            routing_key="user_events",
+            body=json.dumps(user_event),
+            mandatory=True,
+            properties=pika.BasicProperties(content_type="application/json", delivery_mode=2),
+        )
+        print(user_event.get("event_type"))
+        cnt += 1
+
     print(f"Sent {cnt} messages")
     connection.close()
 
