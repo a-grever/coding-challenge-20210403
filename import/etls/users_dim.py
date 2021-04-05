@@ -1,6 +1,7 @@
 from datetime import date
+from typing import Any
 
-from database import crm_t_users_dim, insert_from_select
+from database import crm_t_users_dim, insert_from_select, get_pg_engine
 from common import get_import_date
 
 
@@ -60,20 +61,25 @@ SELECT_QUERY = """
     """
 
 
-def run_users_dim(import_date: date) -> None:
-    """ Fill the table crm.users_dim with data from a single day.
+def run(*, engine: Any, import_date: date) -> None:
+    """Fill the table crm.users_dim with data from a single day.
 
     Parameters
     ----------
+    sqlalchemy.engine.base.Engine
+        db engine
     import_date : date
         date for which to import events
     """
     print(f"processing user events for {import_date}")
     insert_from_select(
-        params={"import_date": import_date}, target_table=crm_t_users_dim, select_stmt=SELECT_QUERY
+        engine=engine,
+        params={"import_date": import_date},
+        target_table=crm_t_users_dim,
+        select_stmt=SELECT_QUERY,
     )
     print(f"imported user events for {import_date} to {crm_t_users_dim.fullname}")
 
 
 if __name__ == "__main__":  # pragma: no cover
-    run_users_dim(import_date=get_import_date())
+    run(engine=get_pg_engine(), import_date=get_import_date())

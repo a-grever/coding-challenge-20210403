@@ -119,13 +119,15 @@ def update_stmt(target_table: Any, update_columns: List) -> Any:
     return insert_stmt.on_conflict_do_update(constraint=constraint, set_=update_dict)
 
 
-def insert_from_select(*, params: dict, target_table: Any, select_stmt: str) -> Any:
+def insert_from_select(*, engine: Any, params: dict, target_table: Any, select_stmt: str) -> Any:
     """ Perform and insert statement based on the select stmnt in <select_stmt>.
     The table <target_table> must have a primary key, any row returned by the select
     statement, whose primary key already exist in the target table causes an upsert.
 
     Parameters
     ----------
+    sqlalchemy.engine.base.Engine
+        db engine
     params : dict
         parameters to be inserted in the select_stmt
     target_table : sqlalchemy.Table
@@ -144,6 +146,5 @@ def insert_from_select(*, params: dict, target_table: Any, select_stmt: str) -> 
 
     ins_from_select_stmt = insert_stmt.from_select(target_columns, text(select_stmt).columns())
 
-    engine = get_pg_engine()
     result = engine.execute(ins_from_select_stmt, params)
     return result

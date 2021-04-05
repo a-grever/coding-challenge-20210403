@@ -1,7 +1,7 @@
 from io import StringIO
 import json
 from pathlib import Path
-from typing import Generator
+from typing import Any, Generator
 
 from database import get_pg_engine, crm_t_organizations_dim
 
@@ -24,9 +24,14 @@ def get_organisations() -> Generator[dict, None, None]:
     yield from user_events
 
 
-def copy_organisations_from_file():
-    """using the COPY command to load organisations into the warehouse."""
-    engine = get_pg_engine()
+def copy_organisations_from_file(engine: Any):
+    """using the COPY command to load organisations into the warehouse.
+
+    Parameters
+    ----------
+    sqlalchemy.engine.base.Engine
+        db engine
+    """
     conn = engine.raw_connection()
     cur = conn.cursor()
 
@@ -48,4 +53,4 @@ def copy_organisations_from_file():
 
 
 if __name__ == "__main__":
-    copy_organisations_from_file()
+    copy_organisations_from_file(engine=get_pg_engine())

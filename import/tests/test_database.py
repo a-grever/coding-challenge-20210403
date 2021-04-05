@@ -29,8 +29,9 @@ def test_update_stmt_missing_pk(pg_env, mock_table):
 
 
 def test_insert_from_select(mock_table, mocker, mock_engine):
-    mocker.patch.object(database, "get_pg_engine", return_value=mock_engine)
     params = {"limit": 100}
     select_stmt = f"SELECT id FROM {mock_table.fullname} LIMIT :limit"
-    database.insert_from_select(params=params, target_table=mock_table, select_stmt=select_stmt)
+    database.insert_from_select(
+        engine=mock_engine, params=params, target_table=mock_table, select_stmt=select_stmt
+    )
     mock_engine.execute.assert_called_with(mocker.ANY, params)
