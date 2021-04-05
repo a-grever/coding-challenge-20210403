@@ -1,13 +1,13 @@
 FROM python:3.8
 
-WORKDIR /usr/src/import/
+WORKDIR /usr/src/warehouse/
 
-COPY ./requirements.txt ./requirements.dev.txt /usr/src/import/
-RUN pip install -r /usr/src/import/requirements.txt && \
-    pip install -r /usr/src/import/requirements.dev.txt
+COPY ./requirements.txt ./requirements.dev.txt /usr/src/warehouse/
+RUN pip install -r /usr/src/warehouse/requirements.txt && \
+    pip install -r /usr/src/warehouse/requirements.dev.txt
 
-COPY ./etls /usr/src/import/etls
-COPY ./tests /usr/src/import/tests
-COPY ./Makefile ./setup.cfg ./pylint.cfg /usr/src/import/
+COPY ./warehouse /usr/src/warehouse/warehouse
+COPY ./tests /usr/src/warehouse/tests
+COPY ./Makefile ./setup.cfg ./pylint.cfg /usr/src/warehouse/
 
-ENV PYTHONPATH=/usr/src/import/etls
+ENV PYTHONPATH=/usr/src/warehouse/warehouse
