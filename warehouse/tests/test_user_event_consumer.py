@@ -27,9 +27,7 @@ def test_callback(mocker, mock_engine, user_event):
         ch=mock_ch, method=mock_method, properties=None, body=json.dumps(user_event).encode()
     )
     mock_engine.execute.assert_called_once()
-    mock_ch.basic_ack.assert_called_once_with(
-        delivery_tag=mock_method.delivery_tag
-    )
+    mock_ch.basic_ack.assert_called_once_with(delivery_tag=mock_method.delivery_tag)
 
 
 def test_callback_reused_engine(mocker, monkeypatch, mock_engine, user_event):
@@ -40,9 +38,7 @@ def test_callback_reused_engine(mocker, monkeypatch, mock_engine, user_event):
         ch=mock_ch, method=mock_method, properties=None, body=json.dumps(user_event).encode()
     )
     mock_engine.execute.assert_called_once()
-    mock_ch.basic_ack.assert_called_once_with(
-        delivery_tag=mock_method.delivery_tag
-    )
+    mock_ch.basic_ack.assert_called_once_with(delivery_tag=mock_method.delivery_tag)
 
 
 def test_main(mocker, monkeypatch):
