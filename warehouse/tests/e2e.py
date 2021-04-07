@@ -90,7 +90,7 @@ def test_complete():
         user_event_producer.main(user_events=events)
     except user_event_producer.pika.exceptions.AMQPConnectionError:
         # give the service some time to start and try again
-        time.sleep(10)
+        time.sleep(15)
         user_event_producer.main(user_events=events)
 
     engine = db.get_pg_engine()
